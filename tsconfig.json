@@ -1,21 +1,27 @@
 {
   "compilerOptions": {
-    "target": "es5",
-    "lib": ["dom", "dom.iterable", "esnext"],
+    "target": "ES2022",
+    "lib": ["ESNext"],
     "allowJs": true,
     "skipLibCheck": true,
-    "strict": false,
+    "strict": true,
     "forceConsistentCasingInFileNames": true,
     "noEmit": true,
     "esModuleInterop": true,
-    "module": "CommonJS",
+    "module": "ES2022",
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": true,
     "incremental": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["*"]
+      "@/*": ["*"],
+      "@polkadot/types": [
+        "./node_modules/@cennznet/types/interfaces/augment-api.d.ts"
+      ],
+      "@polkadot/types/augment": [
+        "./node_modules/@cennznet/types/interfaces/augment-types.d.ts"
+      ]
     }
   },
   "include": ["**/*.ts"],

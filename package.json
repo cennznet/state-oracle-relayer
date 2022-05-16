@@ -1,13 +1,13 @@
 {
   "name": "state-oracle-relayer",
-  "version": "1",
+  "version": "1.0.0",
   "description": "CENNZnet State Oracle Relayer Daeemon",
-  "main": "src/index.ts",
   "repository": "https://github.com/cennznet/state-oracle-relayer",
   "author": "developers@centrality.ai",
   "license": "Apache",
   "dependencies": {
     "@cennznet/api": "^2.1.1-alpha.2",
+    "@cloudamqp/amqp-client": "^2.0.3",
     "ethers": "^5.6.5",
     "winston": "^3.2.1"
   },
@@ -19,8 +19,11 @@
     "typescript": "^4.6.2"
   },
   "scripts": {
-    "start": "ts-node -r tsconfig-paths/register src/index.ts",
+    "execute": "node --enable-source-maps --experimental-specifier-resolution=node --loader ./node-loader.js -r dotenv/config",
+    "start:main": "yarn execute commands/main.ts",
+    "start:worker": "yarn execute commands/worker.ts",
     "format": "prettier --config .prettierrc.json ./ --write"
   },
-  "packageManager": "yarn@3.2.1"
+  "packageManager": "yarn@3.2.1",
+  "type": "module"
 }

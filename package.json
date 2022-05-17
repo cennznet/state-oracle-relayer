@@ -20,8 +20,8 @@
   },
   "scripts": {
     "execute": "node --enable-source-maps --experimental-specifier-resolution=node --loader ./node-loader.js -r dotenv/config",
-    "start:main": "yarn execute commands/main.ts",
-    "start:worker": "yarn execute commands/worker.ts",
+    "start:request-listener": "yarn execute commands/request-listener.ts",
+    "start:request-processor": "yarn execute commands/request-processor.ts",
     "format": "prettier --config .prettierrc.json ./ --write"
   },
   "packageManager": "yarn@3.2.1",

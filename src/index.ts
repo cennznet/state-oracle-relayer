@@ -4,12 +4,12 @@ import { ISubmittableResult } from '@cennznet/types';
 import { Keyring } from '@polkadot/keyring';
 import { ethers, BytesLike, BigNumberish } from 'ethers';
 
-const cennznetNetwork = getenv('CENNZNET_NETWORK', 'local');
+const cennznetNetwork = getenv('CENNZNET_NETWORK', 'rata');
 // Charlie
 // pk: 0xbc1ede780f784bb6991a585e4f6e61522c14e1cae6ad0895fb57b9a205a8f938
 // address (ss58): 5FLSigC9HGRKVhB9FiEo4Y3koPsNmBmLJbpXg2mp1hXcS59Y
 const cennznetSeed = getenv('CENNZNET_SEED', '0xbc1ede780f784bb6991a585e4f6e61522c14e1cae6ad0895fb57b9a205a8f938');
-const ethereumNetwork = getenv('ETHEREUM_NETWORK', 'http://localhost:8545');
+const ethereumNetwork = getenv('ETHEREUM_NETWORK', 'ropsten');
 
 // Response from an `eth_call` rpc
 interface EthCallResponse {

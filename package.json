@@ -19,6 +19,7 @@
     "typescript": "^4.6.2"
   },
   "scripts": {
+    "dev": "docker-compose up",
     "execute": "node --enable-source-maps --experimental-specifier-resolution=node --loader ./node-loader.js -r dotenv/config",
     "start:request-listener": "yarn execute commands/request-listener.ts",
     "start:request-processor": "yarn execute commands/request-processor.ts",

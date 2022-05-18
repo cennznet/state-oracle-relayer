@@ -1,21 +1,33 @@
+import { CENNZNET_NETWORK, ETHEREUM_NETWORK } from "@/libs/constants";
+import { fetchRequestIds } from "@/libs/utils/fetchRequestIds";
+import { getCENNZnetApi } from "@/libs/utils/getCENNZnetApi";
 import { getLogger } from "@/libs/utils/getLogger";
 import { getRabbitMQSet } from "@/libs/utils/getRabbitMQSet";
 import { AMQPError } from "@cloudamqp/amqp-client";
 
-const logger = getLogger("RequestListener");
-
 (async function run() {
-	try {
-		logger.info(`
-State 🔮 Relayer
-	Signer: ABC
-	CENNZnet: Rata
-	Ethereum: Ropsten
-		`);
+	const logger = getLogger("RequestListener");
 
-		process.exit(0);
+	try {
+		logger.info(
+			`
+Initiating with CENNZnet: %s | Ethereum: %s
+`,
+			CENNZNET_NETWORK,
+			ETHEREUM_NETWORK
+		);
+		const cennz = await getCENNZnetApi();
+		const [, queue] = await getRabbitMQSet("RequestQueue");
+
+		cennz.query.ethStateOracle.nextRequestId(async (nextRequestId: any) => {
+			const requestIds = await fetchRequestIds(nextRequestId.toNumber());
+
+			requestIds.forEach((requestId) => {
+				queue.publish(requestId.toString());
+			});
+		});
 	} catch (error: any) {
 		if (error instanceof AMQPError) error?.connection?.close();
-		console.error(error);
+		logger.error(error);
 	}
 })();

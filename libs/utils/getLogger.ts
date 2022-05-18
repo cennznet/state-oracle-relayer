@@ -1,6 +1,6 @@
 import { createLogger, format, transports, Logger } from "winston";
 
-type LoggerService = "RequestListener" | "RequestProccessor";
+type LoggerService = "RequestListener" | "RequestProccessor" | string;
 const instances = {} as Record<LoggerService, Logger>;
 
 export const getLogger = (service: LoggerService): Logger => {

@@ -2738,6 +2738,7 @@ __metadata:
   resolution: "state-oracle-relayer@workspace:."
   dependencies:
     "@cennznet/api": ^2.1.1-alpha.2
+    "@cennznet/types": ^2.1.1-alpha.2
     "@cloudamqp/amqp-client": ^2.0.3
     "@prisma/client": ^3.14.0
     "@types/node": ^17.0.34

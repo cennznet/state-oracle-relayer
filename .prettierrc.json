@@ -11,7 +11,14 @@
   "arrowParens": "always",
   "overrides": [
     {
-      "files": ["*.yml", "*.yaml", "*.json", ".eslintrc", ".prettierrc"],
+      "files": [
+        "*.yml",
+        "*.yaml",
+        "*.json",
+        ".eslintrc",
+        ".prettierrc",
+        "*.prisma"
+      ],
       "options": {
         "useTabs": false,
         "tabWidth": 2

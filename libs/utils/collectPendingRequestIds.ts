@@ -1,4 +1,4 @@
-export const fetchRequestIds = async (
+export const collectPendingRequestIds = async (
 	nextRequestId: number
 ): Promise<number[]> => {
 	const lastProcessedRequestId = 0;

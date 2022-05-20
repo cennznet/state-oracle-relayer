@@ -6,20 +6,16 @@ import { getRabbitMQSet } from "@/libs/utils/getRabbitMQSet";
 import { AMQPError } from "@cloudamqp/amqp-client";
 
 const logger = getLogger("RequestListener");
-
-(async function run() {
+logger.info(
+	`Start RequestListener with CENNZnet: %s | Ethereum: %s...`,
+	CENNZNET_NETWORK,
+	ETHEREUM_NETWORK
+);
+Promise.all([getCENNZnetApi()]).then(async ([cennzApi]) => {
 	try {
-		logger.info(
-			`
-Start RequestListener with CENNZnet: %s | Ethereum: %s
-`,
-			CENNZNET_NETWORK,
-			ETHEREUM_NETWORK
-		);
-		const cennz = await getCENNZnetApi();
 		const [, queue] = await getRabbitMQSet("RequestQueue");
 
-		await cennz.query.ethStateOracle.nextRequestId(
+		await cennzApi.query.ethStateOracle.nextRequestId(
 			async (nextRequestId: any) => {
 				const requestIds = await collectPendingRequestIds(
 					nextRequestId.toNumber()
@@ -34,4 +30,4 @@ Start RequestListener with CENNZnet: %s | Ethereum: %s
 		if (error instanceof AMQPError) error?.connection?.close();
 		logger.error(error);
 	}
-})();
+});

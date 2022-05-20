@@ -1,4 +1,3 @@
-import { getCENNZnetApi } from "@/libs/utils/getCENNZnetApi";
 import { Api } from "@cennznet/api";
 import { BytesLike } from "ethers";
 
@@ -8,16 +7,16 @@ interface RequestDetails {
 }
 
 export const fetchRequestDetails = async (
+	api: Api,
 	requestId: number
 ): Promise<RequestDetails | void> => {
-	const cennz = await getCENNZnetApi();
-	const rawRequestInfo: any = await cennz.query.ethStateOracle.requests(
+	const rawRequestInfo: any = await api.query.ethStateOracle.requests(
 		requestId
 	);
 	if (rawRequestInfo.isNone) return;
 
 	const requestInfo = rawRequestInfo.toJSON();
-	const requestInput = (await cennz.query.ethStateOracle.requestInputData(
+	const requestInput = (await api.query.ethStateOracle.requestInputData(
 		requestId.toString()
 	)) as unknown as BytesLike;
 

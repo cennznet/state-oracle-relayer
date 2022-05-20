@@ -6,90 +6,100 @@ import { Request, RequestInterface } from "@/libs/models";
 import { callEthereum } from "@/libs/utils/callEthereum";
 import { fetchRequestDetails } from "@/libs/utils/fetchRequestDetails";
 import { callCENNZ } from "@/libs/utils/callCENNZ";
+import { getCENNZnetApi } from "@/libs/utils/getCENNZnetApi";
+
+import { getEthersProvider } from "@/libs/utils/getEthersProvider";
 
 const logger = getLogger("RequestProccessor");
+logger.info(
+	`Start RequestProccessor with CENNZnet: %s | Ethereum: %s...`,
+	CENNZNET_NETWORK,
+	ETHEREUM_NETWORK
+);
+Promise.all([getCENNZnetApi(), getEthersProvider()]).then(
+	async ([cennzApi, ethersProvider]) => {
+		const onMessage = async (message: AMQPMessage) => {
+			let updateRequestRecord: any = null;
+			try {
+				const body = message.bodyString();
+				if (!body) return;
+				const requestId = Number(body);
+				updateRequestRecord = createRequestRecordUpdater(
+					requestId
+				) as ReturnType<typeof createRequestRecordUpdater>;
 
-(async function run() {
-	try {
-		logger.info(
-			`
-Start RequestProccessor with CENNZnet: %s | Ethereum: %s
-`,
-			CENNZNET_NETWORK,
-			ETHEREUM_NETWORK
-		);
+				await updateRequestRecord({
+					status: "Pending",
+					state: "Created",
+				});
 
-		const [channel, queue] = await getRabbitMQSet("RequestQueue");
-		channel.prefetch(1);
-		queue.subscribe({}, onMessage);
-	} catch (error) {
-		if (error instanceof AMQPError) error?.connection?.close();
-		logger.error(error);
-	}
-})();
+				// 1. Fetch request details from CENNZnet
+				logger.info("Request #%d: fetching details...", requestId);
+				const { requestInfo, requestInput } =
+					(await fetchRequestDetails(cennzApi, requestId)) || {};
+				if (!requestInfo || !requestInput) {
+					await updateRequestRecord({
+						status: "Skipped",
+					});
+					logger.info("Request #%d: skipped.", requestId);
+					return;
+				}
 
-async function onMessage(message: AMQPMessage) {
-	let updateRequestRecord: any = null;
-	try {
-		const body = message.bodyString();
-		if (!body) return;
-		const requestId = Number(body);
-		updateRequestRecord = createRequestRecordUpdater(requestId) as ReturnType<
-			typeof createRequestRecordUpdater
-		>;
+				await updateRequestRecord({
+					requestInfo,
+					state: "InfoFetched",
+				});
 
-		await updateRequestRecord({
-			status: "Pending",
-			state: "Created",
-		});
+				// 2. Call Ethereum with the request details above
+				logger.info("Request #%d: calling Ethereum...", requestId);
+				const { returnData, blockNumber } = await callEthereum(
+					ethersProvider,
+					requestInfo.destination,
+					requestInput
+				);
 
-		// 1. Fetch request details from CENNZnet
-		logger.info("Request #%d: fetching details...", requestId);
-		const { requestInfo, requestInput } =
-			(await fetchRequestDetails(requestId)) || {};
-		if (!requestInfo || !requestInput) {
-			await updateRequestRecord({
-				status: "Skipped",
-			});
-			logger.info("Request #%d: skipped.", requestId);
-			return;
+				await updateRequestRecord({
+					state: "EthCalled",
+					ethBlockNumber: blockNumber.toString(),
+				});
+
+				// 3. Submit the `returnData` back to requester
+				logger.info("Request #%d: calling CENNZnet...", requestId);
+				const result = await callCENNZ(
+					cennzApi,
+					requestId,
+					returnData,
+					blockNumber
+				);
+
+				await updateRequestRecord({
+					state: "CENNZCalled",
+					status: "Successful",
+					cennzTxHash: result.txHash,
+				});
+
+				logger.info("Request #%d: done.", requestId, result.txHash);
+			} catch (error: any) {
+				if (error?.code === "CENNZ_DISPATCH_ERROR")
+					await updateRequestRecord?.({
+						state: "CENNZCalled",
+						status: "Failed",
+					});
+				else await updateRequestRecord?.({ status: "Failed" });
+				throw error;
+			}
+		};
+
+		try {
+			const [channel, queue] = await getRabbitMQSet("RequestQueue");
+			channel.prefetch(1);
+			queue.subscribe({}, onMessage);
+		} catch (error) {
+			if (error instanceof AMQPError) error?.connection?.close();
+			logger.error(error);
 		}
-
-		await updateRequestRecord({
-			requestInfo,
-			state: "InfoFetched",
-		});
-
-		// 2. Call Ethereum with the request details above
-		logger.info("Request #%d: calling Ethereum...", requestId);
-		const { returnData, blockNumber } = await callEthereum(
-			requestInfo.destination,
-			requestInput
-		);
-
-		await updateRequestRecord({
-			state: "EthCalled",
-			ethBlockNumber: blockNumber.toString(),
-		});
-
-		// 3. Submit the `returnData` back to requester
-		logger.info("Request #%d: calling CENNZnet...", requestId);
-		const result = await callCENNZ(requestId, returnData, blockNumber);
-
-		await updateRequestRecord({
-			state: "CENNZCalled",
-			status: "Successful",
-			cennzTxHash: result.txHash,
-		});
-
-		logger.info("Request #%d: done.", requestId, result.txHash);
-	} catch (error: any) {
-		if (error?.code === "CENNZ_DISPATCH_ERROR")
-			await updateRequestRecord?.({ state: "CENNZCalled", status: "Failed" });
-		else await updateRequestRecord?.({ status: "Failed" });
-		throw error;
 	}
-}
+);
 
 function createRequestRecordUpdater(
 	requestId: number

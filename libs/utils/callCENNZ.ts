@@ -1,10 +1,10 @@
 import { CENNZNET_SIGNER } from "@/libs/constants";
-import { getCENNZnetApi } from "@/libs/utils/getCENNZnetApi";
-import { SubmittableResult } from "@cennznet/api";
+import { Api, SubmittableResult } from "@cennznet/api";
 import Keyring from "@polkadot/keyring";
 import { BigNumberish, BytesLike } from "ethers";
 
 export const callCENNZ = async (
+	api: Api,
 	requestId: number,
 	returnData: BytesLike,
 	blockNumber: BigNumberish
@@ -13,10 +13,8 @@ export const callCENNZ = async (
 		CENNZNET_SIGNER as any
 	);
 
-	const cennz = await getCENNZnetApi();
-
 	return new Promise((resolve, reject) => {
-		cennz.tx.ethStateOracle
+		api.tx.ethStateOracle
 			.submitCallResponse(requestId, returnData, blockNumber)
 			.signAndSend(signer, (result: SubmittableResult) => {
 				const { status, dispatchError } = result;

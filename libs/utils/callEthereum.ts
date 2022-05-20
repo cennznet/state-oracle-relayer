@@ -1,4 +1,3 @@
-import { ETHEREUM_NETWORK } from "@/libs/constants";
 import { BigNumberish, BytesLike, ethers } from "ethers";
 
 interface EthCallResponse {
@@ -9,10 +8,10 @@ interface EthCallResponse {
 }
 
 export const callEthereum = async (
+	provider: ethers.providers.BaseProvider,
 	target: string,
 	input: BytesLike
 ): Promise<EthCallResponse> => {
-	const provider = ethers.getDefaultProvider(ETHEREUM_NETWORK);
 	const blockNumber = await provider.getBlockNumber();
 	const returnData = await provider.call(
 		{

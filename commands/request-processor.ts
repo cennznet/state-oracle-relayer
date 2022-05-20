@@ -38,9 +38,8 @@ async function onMessage(message: AMQPMessage) {
 			typeof createRequestRecordUpdater
 		>;
 
+		// 1. Fetch request details from CENNZnet
 		logger.info("Request #%d: fetching...", requestId);
-
-		// 1. Fetch request details from CENNZNet
 		const { requestInfo, requestInput } =
 			(await fetchRequestDetails(requestId)) || {};
 		if (!requestInfo || !requestInput) {
@@ -53,9 +52,9 @@ async function onMessage(message: AMQPMessage) {
 			status: "Pending",
 			state: "Created",
 		});
-		logger.info("Request #%d: processing...", requestId);
 
 		// 2. Call Ethereum with the request details above
+		logger.info("Request #%d: calling Ethereum...", requestId);
 		const { returnData, blockNumber } = await callEthereum(
 			requestInfo.destination,
 			requestInput
@@ -67,15 +66,19 @@ async function onMessage(message: AMQPMessage) {
 		});
 
 		// 3. Submit the `returnData` back to requester
+		logger.info("Request #%d: calling CENNZnet...", requestId);
 		const result = await callCENNZ(requestId, returnData, blockNumber);
 		await updateRequestRecord({
 			state: "CENNZCalled",
 			status: "Successful",
 			cennzTxHash: result.txHash,
 		});
+
 		logger.info("Request #%d: done.", requestId, result.txHash);
-	} catch (error) {
-		await updateRequestRecord?.({ status: "Failed" });
+	} catch (error: any) {
+		if (error?.code === "CENNZ_DISPATCH_ERROR")
+			await updateRequestRecord?.({ state: "CENNZCalled", status: "Failed" });
+		else await updateRequestRecord?.({ status: "Failed" });
 		throw error;
 	}
 }

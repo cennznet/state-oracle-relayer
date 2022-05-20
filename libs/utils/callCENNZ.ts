@@ -23,7 +23,8 @@ export const callCENNZ = async (
 
 				if (!status.isInBlock) return;
 
-				if (dispatchError) return reject(dispatchError);
+				if (dispatchError)
+					return reject({ code: "CENNZ_DISPATCH_ERROR", error: dispatchError });
 
 				resolve(result);
 			});

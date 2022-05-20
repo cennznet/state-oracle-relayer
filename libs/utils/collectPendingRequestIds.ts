@@ -1,4 +1,3 @@
-import { REQUEST_ID_TO_START } from "@/libs/constants";
 import { Request } from "@/libs/models";
 
 export const collectPendingRequestIds = async (
@@ -12,7 +11,7 @@ export const collectPendingRequestIds = async (
 
 	const requestIdToStart = lastProcessedRequest
 		? lastProcessedRequest.requestId + 1
-		: REQUEST_ID_TO_START;
+		: 0;
 	const requestIds = [];
 
 	for (let i = requestIdToStart; i < nextRequestId; i++) requestIds.push(i);

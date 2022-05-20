@@ -38,19 +38,26 @@ async function onMessage(message: AMQPMessage) {
 			typeof createRequestRecordUpdater
 		>;
 
+		await updateRequestRecord({
+			status: "Pending",
+			state: "Created",
+		});
+
 		// 1. Fetch request details from CENNZnet
-		logger.info("Request #%d: fetching...", requestId);
+		logger.info("Request #%d: fetching details...", requestId);
 		const { requestInfo, requestInput } =
 			(await fetchRequestDetails(requestId)) || {};
 		if (!requestInfo || !requestInput) {
+			await updateRequestRecord({
+				status: "Skipped",
+			});
 			logger.info("Request #%d: skipped.", requestId);
 			return;
 		}
 
 		await updateRequestRecord({
 			requestInfo,
-			status: "Pending",
-			state: "Created",
+			state: "InfoFetched",
 		});
 
 		// 2. Call Ethereum with the request details above
@@ -68,6 +75,7 @@ async function onMessage(message: AMQPMessage) {
 		// 3. Submit the `returnData` back to requester
 		logger.info("Request #%d: calling CENNZnet...", requestId);
 		const result = await callCENNZ(requestId, returnData, blockNumber);
+
 		await updateRequestRecord({
 			state: "CENNZCalled",
 			status: "Successful",

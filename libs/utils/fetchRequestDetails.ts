@@ -13,6 +13,7 @@ export const fetchRequestDetails = async (
 	const rawRequestInfo: any = await api.query.ethStateOracle.requests(
 		requestId
 	);
+
 	if (rawRequestInfo.isNone) return;
 
 	const requestInfo = rawRequestInfo.toJSON();

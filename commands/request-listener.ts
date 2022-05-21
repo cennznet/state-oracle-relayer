@@ -11,8 +11,8 @@ logger.info(
 	CENNZNET_NETWORK,
 	ETHEREUM_NETWORK
 );
-Promise.all([getCENNZnetApi()]).then(async ([cennzApi]) => {
-	try {
+Promise.all([getCENNZnetApi()])
+	.then(async ([cennzApi]) => {
 		const [, queue] = await getRabbitMQSet("RequestQueue");
 
 		await cennzApi.query.ethStateOracle.nextRequestId(
@@ -26,8 +26,8 @@ Promise.all([getCENNZnetApi()]).then(async ([cennzApi]) => {
 				});
 			}
 		);
-	} catch (error: any) {
+	})
+	.catch((error) => {
 		if (error instanceof AMQPError) error?.connection?.close();
 		logger.error(error);
-	}
-});
+	});

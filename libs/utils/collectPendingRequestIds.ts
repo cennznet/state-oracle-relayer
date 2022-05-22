@@ -12,6 +12,7 @@ export const collectPendingRequestIds = async (
 	const requestIdToStart = lastProcessedRequest
 		? lastProcessedRequest.requestId + 1
 		: 0;
+
 	const requestIds = [];
 
 	for (let i = requestIdToStart; i < nextRequestId; i++) requestIds.push(i);

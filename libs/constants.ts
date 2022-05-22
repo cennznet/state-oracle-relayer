@@ -8,3 +8,6 @@ export const CENNZNET_SIGNER: string = process.env.CENNZNET_SIGNER ?? "";
 export const MESSAGE_MAX_RETRY: number = Number(
 	process.env.MESSAGE_MAX_RETRY ?? 3
 );
+export const MESSAGE_MAX_TIME: number = Number(
+	process.env.MESSAGE_MAX_TIME ?? 10000
+);

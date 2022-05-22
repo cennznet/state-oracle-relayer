@@ -26,7 +26,7 @@
   "scripts": {
     "dev": "docker-compose up",
     "dev:cennznet": "docker run -p 9944:9944 -p 9933:9933 cennznet/cennznet:5657cbd7 --dev --unsafe-ws-external --unsafe-rpc-external",
-    "execute": "ts-node -r tsconfig-paths/register -r dotenv/config",
+    "execute": "ts-node -r tsconfig-paths/register",
     "start": "run-p start:request-listener start:request-processor start:request-processor",
     "start:request-listener": "yarn execute --files commands/request-listener.ts",
     "start:request-processor": "yarn execute --files commands/request-processor.ts",

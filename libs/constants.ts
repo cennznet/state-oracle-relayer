@@ -1,3 +1,5 @@
+require("dotenv").config();
+
 export const MONGODB_SERVER: string =
 	process.env.MONGODB_SERVER ?? "mongodb://root:root@localhost:27017/admin";
 export const RABBBITMQ_SERVER: string =
@@ -11,3 +13,12 @@ export const MESSAGE_MAX_RETRY: number = Number(
 export const MESSAGE_MAX_TIME: number = Number(
 	process.env.MESSAGE_MAX_TIME ?? 10000
 );
+
+export const INFURA_PROJECT = process.env.INFURA_PROJECT_ID
+	? {
+			projectId: process.env.INFURA_PROJECT_ID,
+			projectSecret: process.env.INFURA_PROJECT_SECRET,
+	  }
+	: null;
+
+export const ALCHEMY_API_TOKEN: string = process.env.ALCHEMY_API_TOKEN ?? "";

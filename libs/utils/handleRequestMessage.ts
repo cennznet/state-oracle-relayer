@@ -17,14 +17,14 @@ export const handleRequestMessage = async (
 	message: AMQPMessage
 ): Promise<void> => {
 	let updateRequestRecord: any = null;
-	try {
-		const body = message.bodyString();
-		if (!body) return;
-		const requestId = Number(body);
-		updateRequestRecord = createRequestRecordUpdater(requestId) as ReturnType<
-			typeof createRequestRecordUpdater
-		>;
+	const body = message.bodyString();
+	if (!body) return;
+	const requestId = Number(body);
+	updateRequestRecord = createRequestRecordUpdater(requestId) as ReturnType<
+		typeof createRequestRecordUpdater
+	>;
 
+	try {
 		await updateRequestRecord({
 			status: "Pending",
 			state: "Created",
@@ -38,6 +38,7 @@ export const handleRequestMessage = async (
 			await updateRequestRecord({
 				status: "Skipped",
 			});
+			await message.ack();
 			logger.info("Request #%d: skipped.", requestId);
 			return;
 		}
@@ -75,7 +76,8 @@ export const handleRequestMessage = async (
 			cennzTxHash: result.txHash,
 		});
 
-		logger.info("Request #%d: done.", requestId, result.txHash);
+		await message.ack();
+		logger.info("Request #%d: done.", requestId);
 	} catch (error: any) {
 		if (error?.code === "CENNZ_DISPATCH_ERROR")
 			await updateRequestRecord?.({
@@ -83,7 +85,8 @@ export const handleRequestMessage = async (
 				status: "Failed",
 			});
 		else await updateRequestRecord?.({ status: "Failed" });
-		await requeueMessage(queue, message);
+		const response = await requeueMessage(queue, message);
+		logger.info("Request #%d: %s.", requestId, response.toLowerCase());
 		logger.error(error);
 	}
 };

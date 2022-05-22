@@ -9,14 +9,9 @@ export const requeueMessage = async (
 ): Promise<ResponseStatus> => {
 	const retriesCount = Number(message?.properties?.headers?.["x-retries"] ?? 0);
 
-	if (retriesCount > MESSAGE_MAX_RETRY) return "Discarded";
-
-	message.properties.headers = {
-		...message.properties.headers,
-		"x-retries": retriesCount + 1,
-	};
-
 	await message.reject(false);
+
+	if (retriesCount >= MESSAGE_MAX_RETRY) return "Discarded";
 
 	await queue.publish(message.body!, {
 		...message.properties,

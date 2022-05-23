@@ -24,14 +24,20 @@
     "typescript": "^4.6.2"
   },
   "scripts": {
-    "dev": "docker-compose up",
+    "dev:docker": "docker-compose up",
     "dev:cennznet": "docker run -p 9944:9944 -p 9933:9933 cennznet/cennznet:5657cbd7 --dev --unsafe-ws-external --unsafe-rpc-external",
-    "execute": "ts-node -r tsconfig-paths/register",
-    "start": "run-p start:request-listener start:request-processor start:request-processor",
-    "start:request-listener": "yarn execute --files commands/request-listener.ts",
-    "start:request-processor": "yarn execute --files commands/request-processor.ts",
+    "dev:execute": "ts-node -r tsconfig-paths/register",
+    "dev:": "run-p dev:request-listener dev:request-processor dev:request-processor",
+    "dev:request-listener": "yarn dev:execute --files commands/request-listener.ts",
+    "dev:request-processor": "yarn dev:execute --files commands/request-processor.ts",
     "format": "prettier --config .prettierrc.json ./ --write",
-    "build": "tsc -p tsconfig.build.json && tsc-alias -p tsconfig.build.json"
+    "build": "tsc -p tsconfig.build.json && tsc-alias -p tsconfig.build.json",
+    "start:request-listener": "node ./dist/commands/request-listener.js",
+    "start:request-processor": "node ./dist/commands/request-processor.js",
+    "start": "run-p start:request-listener start:request-processor start:request-processor"
   },
-  "packageManager": "yarn@3.2.1"
+  "packageManager": "yarn@3.2.1",
+  "engines": {
+    "node": ">=16"
+  }
 }

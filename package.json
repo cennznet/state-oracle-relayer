@@ -25,7 +25,7 @@
   },
   "scripts": {
     "dev:docker": "docker-compose up",
-    "dev:cennznet": "docker run -p 9944:9944 -p 9933:9933 cennznet/cennznet:5657cbd7 --dev --unsafe-ws-external --unsafe-rpc-external",
+    "dev:cennznet": "docker run -p 9944:9944 -p 9933:9933 cennznet/cennznet:latest --dev --unsafe-ws-external --unsafe-rpc-external",
     "dev:execute": "ts-node -r tsconfig-paths/register",
     "dev": "run-p dev:request-listener dev:request-processor dev:request-processor",
     "dev:request-listener": "yarn dev:execute --files commands/request-listener.ts",

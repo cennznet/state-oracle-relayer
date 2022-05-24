@@ -32,9 +32,8 @@ export const handleRequestMessage = async (
 
 		// 1. Fetch request details from CENNZnet
 		logger.info("Request #%d: fetching details...", requestId);
-		const { requestInfo, requestInput } =
-			(await fetchRequestDetails(cennzApi, requestId)) || {};
-		if (!requestInfo || !requestInput) {
+		const requestDetails = await fetchRequestDetails(cennzApi, requestId);
+		if (!requestDetails) {
 			await updateRequestRecord({
 				status: "Skipped",
 			});
@@ -44,7 +43,7 @@ export const handleRequestMessage = async (
 		}
 
 		await updateRequestRecord({
-			requestInfo,
+			requestDetails,
 			state: "InfoFetched",
 		});
 
@@ -52,8 +51,8 @@ export const handleRequestMessage = async (
 		logger.info("Request #%d: calling Ethereum...", requestId);
 		const { returnData, blockNumber } = await callEthereum(
 			ethersProvider,
-			requestInfo.destination,
-			requestInput
+			requestDetails.destination,
+			requestDetails.inputData
 		);
 
 		await updateRequestRecord({

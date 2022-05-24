@@ -5,7 +5,7 @@ mongooes.connect(MONGODB_SERVER);
 
 export interface RequestInterface {
 	requestId: number;
-	requestInfo?: Record<string, any>;
+	requestDetails?: Record<string, any>;
 	state: "Created" | "InfoFetched" | "EthCalled" | "CENNZCalled";
 	status: "Pending" | "Successful" | "Failed" | "Skipped";
 	ethBlockNumber?: string;
@@ -16,7 +16,7 @@ export interface RequestInterface {
 
 const RequestSchema = new Schema<RequestInterface>({
 	requestId: { type: Schema.Types.Number, required: true, unique: true },
-	requestInfo: { type: Schema.Types.Map, of: Schema.Types.Mixed },
+	requestDetails: { type: Schema.Types.Map, of: Schema.Types.Mixed },
 	state: { type: Schema.Types.String, required: true },
 	status: { type: Schema.Types.String, required: true },
 	ethBlockNumber: { type: Schema.Types.Number },

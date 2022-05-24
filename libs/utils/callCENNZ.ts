@@ -1,7 +1,7 @@
 import { CENNZNET_SIGNER } from "@/libs/constants";
 import { Api, SubmittableResult } from "@cennznet/api";
 import Keyring from "@polkadot/keyring";
-import { BigNumberish, BytesLike } from "ethers";
+import { BigNumberish, BytesLike, utils } from "ethers";
 
 export const callCENNZ = async (
 	api: Api,
@@ -13,9 +13,20 @@ export const callCENNZ = async (
 		CENNZNET_SIGNER as any
 	);
 
+	const returnDataLength = utils.hexDataLength(returnData);
+
+	const returnDataClaim = api.registry.createType(
+		"ReturnDataClaim",
+		returnDataLength <= 32
+			? {
+					Ok: returnData,
+			  }
+			: { ExceedsLengthLimit: null }
+	);
+
 	return new Promise((resolve, reject) => {
 		api.tx.ethStateOracle
-			.submitCallResponse(requestId, returnData, blockNumber)
+			.submitCallResponse(requestId, returnDataClaim, blockNumber)
 			.signAndSend(signer, (result: SubmittableResult) => {
 				const { status, dispatchError } = result;
 

@@ -16,9 +16,11 @@ export const callCENNZ = async (
 
 	const returnDataLength = utils.hexDataLength(returnData);
 
+	if (returnDataLength < 32) throw { code: "INVALID_RETURN_DATA" };
+
 	const returnDataClaim = api.registry.createType(
 		"ReturnDataClaim",
-		returnDataLength <= 32
+		returnDataLength === 32
 			? {
 					Ok: returnData,
 			  }

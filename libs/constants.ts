@@ -21,4 +21,6 @@ export const INFURA_PROJECT = process.env.INFURA_PROJECT_ID
 	  }
 	: null;
 
-export const ALCHEMY_API_TOKEN: string = process.env.ALCHEMY_API_TOKEN ?? "";
+export const ALCHEMY_API_TOKEN: string = process.env.ALCHEMY_API_TOKEN ?? "-";
+export const ETHERSCAN_API_TOKEN: string =
+	process.env.ETHERSCAN_API_TOKEN ?? "-";

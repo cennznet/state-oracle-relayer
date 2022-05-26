@@ -41,7 +41,10 @@ export const callCENNZ = async (
 				if (!status.isInBlock) return;
 
 				if (dispatchError)
-					return reject({ code: "CENNZ_DISPATCH_ERROR", error: dispatchError });
+					return reject({
+						code: "CENNZ_DISPATCH_ERROR",
+						error: JSON.stringify(dispatchError.toJSON()),
+					});
 
 				resolve(result);
 			});

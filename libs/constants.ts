@@ -11,7 +11,7 @@ export const MESSAGE_MAX_RETRY: number = Number(
 	process.env.MESSAGE_MAX_RETRY ?? 3
 );
 export const MESSAGE_MAX_TIME: number = Number(
-	process.env.MESSAGE_MAX_TIME ?? 10000
+	process.env.MESSAGE_MAX_TIME ?? 30000
 );
 
 export const INFURA_PROJECT = process.env.INFURA_PROJECT_ID

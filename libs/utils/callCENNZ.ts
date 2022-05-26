@@ -25,8 +25,6 @@ export const callCENNZ = async (
 			: { ExceedsLengthLimit: null }
 	);
 
-	console.log({ blockTimestamp });
-
 	return new Promise((resolve, reject) => {
 		api.tx.ethStateOracle
 			.submitCallResponse(

@@ -9,7 +9,6 @@ import { AMQPError, AMQPMessage } from "@cloudamqp/amqp-client";
 import { getCENNZnetApi } from "@/libs/utils/getCENNZnetApi";
 import { getEthersProvider } from "@/libs/utils/getEthersProvider";
 import { handleRequestMessage } from "@/libs/utils/handleRequestMessage";
-import { waitFor } from "@/libs/utils/waitFor";
 
 const logger = getLogger("RequestProccessor");
 logger.info(
@@ -21,15 +20,13 @@ Promise.all([getCENNZnetApi(), getEthersProvider()])
 	.then(async ([cennzApi, ethersProvider]) => {
 		const [channel, queue] = await getRabbitMQSet("RequestQueue");
 		const onMessage = async (message: AMQPMessage) => {
-			const response = await Promise.race([
-				handleRequestMessage(cennzApi, ethersProvider, queue, message),
-				waitFor(MESSAGE_MAX_TIME, "timeout"),
-			]);
-
-			if (response === "timeout") {
-				await message.reject(false);
-				logger.error("timeout");
-			}
+			await handleRequestMessage(
+				cennzApi,
+				ethersProvider,
+				queue,
+				message,
+				(AbortSignal as any).timeout(MESSAGE_MAX_TIME)
+			);
 		};
 
 		channel.prefetch(1);

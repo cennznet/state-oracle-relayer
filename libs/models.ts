@@ -7,7 +7,7 @@ export interface RequestInterface {
 	requestId: number;
 	requestDetails?: Record<string, any>;
 	state: "Created" | "InfoFetched" | "EthCalled" | "CENNZCalled";
-	status: "Pending" | "Successful" | "Failed" | "Skipped";
+	status: "Pending" | "Successful" | "Failed" | "Skipped" | "Aborted";
 	ethBlockNumber?: string;
 	cennzTxHash?: string;
 	createdAt?: Date;

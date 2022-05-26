@@ -7,7 +7,7 @@ import { ethers } from "ethers";
 
 export const getEthersProvider = (): ethers.providers.BaseProvider => {
 	return ethers.getDefaultProvider(ETHEREUM_NETWORK, {
-		alchemy: ALCHEMY_API_TOKEN,
-		infura: INFURA_PROJECT,
+		...(INFURA_PROJECT && { infura: INFURA_PROJECT }),
+		...(ALCHEMY_API_TOKEN && { alchemy: ALCHEMY_API_TOKEN }),
 	});
 };

@@ -2,7 +2,7 @@ const getenv = require('getenv');
 import { Api } from '@cennznet/api';
 import { ISubmittableResult } from '@cennznet/types';
 import { Keyring } from '@polkadot/keyring';
-import { ethers, BytesLike, BigNumberish } from 'ethers';
+import { ethers, BytesLike, BigNumberish, utils } from 'ethers';
 
 const cennznetNetwork = getenv('CENNZNET_NETWORK', 'rata');
 // Charlie
@@ -17,6 +17,8 @@ interface EthCallResponse {
     returnData: BytesLike,
     // The block number where returnData was retrieved
     blockNumber: BigNumberish,
+    // The block timestamp
+    blockTimestamp: number
 }
 
 /**
@@ -27,9 +29,11 @@ interface EthCallResponse {
  */
 async function ethCall(target: string, input: BytesLike): Promise<EthCallResponse> {
     console.log(`making eth_call:${target},input:${input}`);
-    let provider = ethers.getDefaultProvider(ethereumNetwork);
-    let blockNumber = await provider.getBlockNumber();
-    let returnData = await provider.call({
+    const provider = ethers.getDefaultProvider(ethereumNetwork);
+    const blockNumber = await provider.getBlockNumber();
+    const { timestamp: blockTimestamp } = await provider.getBlock(blockNumber);
+
+    const returnData = await provider.call({
         to: target.toString(),
         data: input,
     }, blockNumber);
@@ -37,6 +41,7 @@ async function ethCall(target: string, input: BytesLike): Promise<EthCallRespons
     return {
         returnData,
         blockNumber,
+        blockTimestamp
     }
 }
 
@@ -44,7 +49,14 @@ async function ethCall(target: string, input: BytesLike): Promise<EthCallRespons
 * Run the relayer daemon
 */
 async function main() {
-    let api = await Api.create({ network: cennznetNetwork });
+    let api = await Api.create({ network: cennznetNetwork, types: {
+		ReturnDataClaim: {
+			_enum: {
+				Ok: "[u8; 32]",
+				ExceedsLengthLimit: null,
+			},
+		},
+	} });
     let cennznetSigner = new Keyring({ 'type': 'sr25519' }).addFromSeed(cennznetSeed);
     console.log(
         `\nstate 🔮 relayer\n`+
@@ -55,18 +67,33 @@ async function main() {
 
     await api.query.ethStateOracle.nextRequestId(async (nextRequestId: number) => {
         if(nextRequestId == 0) return;
-        let requestId = nextRequestId - 1;
-        let requestInfo = (await api.query.ethStateOracle.requests(requestId) as any);
-        if(requestInfo.isNone) return;
+        const requestId = nextRequestId - 1;
+        const rawRequestDetails: any = await api.query.ethStateOracle.requests(requestId);
+        if(rawRequestDetails.isNone) return;
 
-        let requestInputData = (await api.query.ethStateOracle.requestInputData(requestId) as any);
-        console.log(`new request: ${requestId}\ninfo:${requestInfo.unwrap().toString()}`);
+        const requestDetails:any = rawRequestDetails.toJSON();
 
-        let {returnData, blockNumber} = await ethCall(requestInfo.unwrap().destination, requestInputData);
+        console.log(`new request: ${requestId}\ninfo:${JSON.stringify(requestDetails)}`);
+
+        let {returnData, blockNumber, blockTimestamp} = await ethCall(requestDetails.destination, requestDetails.inputData);
+
+        const returnDataLength = utils.hexDataLength(returnData);
+
+        if(returnDataLength < 32) {
+        	console.log("return data is less than 32 ignore");
+        	return;
+        }
+
+		const returnDataClaim = api.registry.createType(
+			"ReturnDataClaim",
+			returnDataLength === 32
+			? { Ok: returnData }
+			: { ExceedsLengthLimit: null }
+		);
 
         console.log(`submitting response: ${requestId}`);
         await api.tx.ethStateOracle
-            .submitCallResponse(requestId, returnData, blockNumber)
+            .submitCallResponse(requestId, returnDataClaim, blockNumber, blockTimestamp)
             .signAndSend(cennznetSigner, (status: ISubmittableResult) => {
                 if(status.isInBlock) {
                     console.log(`request: ${requestId} submitted`);

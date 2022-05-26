@@ -51,6 +51,7 @@ export const handleRequestMessage = async (
 			await updateRequestRecord({
 				status: "Skipped",
 			});
+			messageDelivered = true;
 			await message.ack();
 			logger.info("Request #%d: skipped.", requestId);
 			return;
@@ -94,9 +95,8 @@ export const handleRequestMessage = async (
 		});
 
 		if (abortSignal.aborted) return;
-
-		await message.ack();
 		messageDelivered = true;
+		await message.ack();
 		logger.info("Request #%d: done.", requestId);
 	} catch (error: any) {
 		switch (error?.code) {

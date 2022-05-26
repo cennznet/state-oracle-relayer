@@ -7,7 +7,8 @@ export const callCENNZ = async (
 	api: Api,
 	requestId: number,
 	returnData: BytesLike,
-	blockNumber: BigNumberish
+	blockNumber: BigNumberish,
+	blockTimestamp: number
 ): Promise<SubmittableResult> => {
 	const signer = new Keyring({ type: "sr25519" }).addFromSeed(
 		CENNZNET_SIGNER as any
@@ -24,9 +25,16 @@ export const callCENNZ = async (
 			: { ExceedsLengthLimit: null }
 	);
 
+	console.log({ blockTimestamp });
+
 	return new Promise((resolve, reject) => {
 		api.tx.ethStateOracle
-			.submitCallResponse(requestId, returnDataClaim, blockNumber)
+			.submitCallResponse(
+				requestId,
+				returnDataClaim,
+				blockNumber,
+				blockTimestamp
+			)
 			.signAndSend(signer, (result: SubmittableResult) => {
 				const { status, dispatchError } = result;
 

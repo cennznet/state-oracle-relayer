@@ -5,6 +5,8 @@ interface EthCallResponse {
 	returnData: BytesLike;
 	// The block number where returnData was retrieved
 	blockNumber: BigNumberish;
+
+	blockTimestamp: number;
 }
 
 export const callEthereum = async (
@@ -13,6 +15,7 @@ export const callEthereum = async (
 	input: BytesLike
 ): Promise<EthCallResponse> => {
 	const blockNumber = await provider.getBlockNumber();
+	const { timestamp: blockTimestamp } = await provider.getBlock(blockNumber);
 	const returnData = await provider.call(
 		{
 			to: target,
@@ -21,5 +24,5 @@ export const callEthereum = async (
 		blockNumber
 	);
 
-	return { returnData, blockNumber };
+	return { returnData, blockNumber, blockTimestamp };
 };

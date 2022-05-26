@@ -49,7 +49,7 @@ export const handleRequestMessage = async (
 
 		// 2. Call Ethereum with the request details above
 		logger.info("Request #%d: calling Ethereum...", requestId);
-		const { returnData, blockNumber } = await callEthereum(
+		const { returnData, blockNumber, blockTimestamp } = await callEthereum(
 			ethersProvider,
 			requestDetails.destination,
 			requestDetails.inputData
@@ -66,7 +66,8 @@ export const handleRequestMessage = async (
 			cennzApi,
 			requestId,
 			returnData,
-			blockNumber
+			blockNumber,
+			blockTimestamp
 		);
 
 		await updateRequestRecord({

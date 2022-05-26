@@ -28,6 +28,7 @@ Promise.all([getCENNZnetApi(), getEthersProvider()])
 
 			if (response === "timeout") {
 				await message.reject(false);
+				logger.error("timeout");
 			}
 		};
 
@@ -36,5 +37,5 @@ Promise.all([getCENNZnetApi(), getEthersProvider()])
 	})
 	.catch((error) => {
 		if (error instanceof AMQPError) error?.connection?.close();
-		logger.error(error);
+		logger.error("%s", error);
 	});

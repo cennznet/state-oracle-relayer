@@ -87,7 +87,7 @@ export const handleRequestMessage = async (
 		else await updateRequestRecord?.({ status: "Failed" });
 		const response = await requeueMessage(queue, message);
 		logger.info("Request #%d: %s.", requestId, response.toLowerCase());
-		logger.error(error);
+		logger.error("Request #%d: %s", requestId, error);
 	}
 };
 

@@ -29,7 +29,13 @@ interface EthCallResponse {
  */
 async function ethCall(target: string, input: BytesLike): Promise<EthCallResponse> {
     console.log(`making eth_call:${target},input:${input}`);
-    const provider = ethers.getDefaultProvider(ethereumNetwork);
+    const provider = ethers.getDefaultProvider(ethereumNetwork, {
+    	etherscan: "W7SECH28YMK2B1FCJP2SPXBZW5WDF4VEBV",
+    	infura: "-",
+    	alchemy: "-",
+    	pocket: "-",
+    	ankr: "-"
+    });
     const blockNumber = await provider.getBlockNumber();
     const { timestamp: blockTimestamp } = await provider.getBlock(blockNumber);
 

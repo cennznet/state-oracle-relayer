@@ -100,10 +100,15 @@ async function main() {
         console.log(`submitting response: ${requestId}`);
         await api.tx.ethStateOracle
             .submitCallResponse(requestId, returnDataClaim, blockNumber, blockTimestamp)
-            .signAndSend(cennznetSigner, (status: ISubmittableResult) => {
-                if(status.isInBlock) {
-                    console.log(`request: ${requestId} submitted`);
-                }
+            .signAndSend(cennznetSigner, (result: ISubmittableResult) => {
+            	const { status, dispatchError } = result;
+
+            	if (!status.isInBlock) return;
+
+            	if (dispatchError)
+					return console.warn({ error: JSON.stringify(dispatchError) });
+
+                console.log(`request: ${requestId} submitted`);
             });
     });
 }

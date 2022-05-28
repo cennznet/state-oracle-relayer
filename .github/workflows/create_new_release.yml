@@ -28,13 +28,6 @@ jobs:
           git add package.json
           git commit --message "Prepare release ${{ github.event.inputs.version }}"
           git push --set-upstream origin release/v${{ github.event.inputs.version }}
-          echo "::set-output name=commit::$(git rev-parse HEAD)"
 
       - name: Create pull request to `main`
-        uses: devops-infra/action-pull-request@v0.4.2
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          source_branch: release/v${{ github.event.inputs.version }}
-          target_branch: main
-          title: Release version ${{ github.event.inputs.version }}
-          draft: true
+        run: gh pr create --title "Release version ${{ github.event.inputs.version }}" --draft --base main

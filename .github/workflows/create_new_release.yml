@@ -30,6 +30,6 @@ jobs:
           git push --set-upstream origin release/v${{ github.event.inputs.version }}
 
       - name: Create pull request to `main`
-        run: gh pr create --title "Release version ${{ github.event.inputs.version }}" --draft --base main
+        run: gh pr create --draft --base main --title "Release version ${{ github.event.inputs.version }}" --body ""
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

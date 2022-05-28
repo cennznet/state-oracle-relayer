@@ -1,4 +1,4 @@
-name: "Prep new release"
+name: "Create new release"
 
 on:
   workflow_dispatch:
@@ -8,8 +8,8 @@ on:
         required: true
 
 jobs:
-  draft-new-release:
-    name: "Prep a release"
+  create-new-release:
+    name: "New release branch"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2

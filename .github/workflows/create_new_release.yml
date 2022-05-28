@@ -13,6 +13,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+        with:
+          ref: develop
 
       - name: Initialize mandatory git config
         run: |
@@ -31,5 +33,5 @@ jobs:
         with:
           branch: release/v${{ github.event.inputs.version }}
           commit-message: Prep for v${{ github.event.inputs.version }}
-          base: main
+          base: develop
           title: Release version ${{ github.event.inputs.version }}

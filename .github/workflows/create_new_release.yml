@@ -12,7 +12,7 @@ jobs:
     name: "New release branch"
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Initialize mandatory git config
         run: |
@@ -20,7 +20,7 @@ jobs:
           git config user.email noreply@github.com
 
       - name: Update CHANGELOG entry
-        uses: thomaseizinger/keep-a-changelog-new-release@1.1.0
+        uses: vemel/update-changelog@0.0.1
         with:
           version: ${{ github.event.inputs.version }}
 
@@ -35,7 +35,6 @@ jobs:
           branch: release/v${{ github.event.inputs.version }}
           base: develop
           title: Release version ${{ github.event.inputs.version }}
-          reviewers: ${{ github.actor }}
 
       - name: Create pull request
         uses: peter-evans/create-pull-request@v4
@@ -43,4 +42,3 @@ jobs:
           branch: release/v${{ github.event.inputs.version }}
           base: main
           title: Release version ${{ github.event.inputs.version }}
-          reviewers: ${{ github.actor }}

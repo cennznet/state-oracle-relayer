@@ -23,7 +23,7 @@ jobs:
 
       - name: Update version
         run: |
-          yarn version --new-version ${{ github.event.inputs.version }}
+          npm version ${{ github.event.inputs.version }}
 
       - name: Create pull request to `main`
         uses: peter-evans/create-pull-request@v4

@@ -1,6 +1,6 @@
 {
   "name": "state-oracle-relayer",
-  "version": "0.0.1",
+  "version": "1.0.2",
   "description": "CENNZnet state oracle relayer daeemon",
   "main": "index.js",
   "repository": "https://github.com/cennznet/state-oracle-relayer",

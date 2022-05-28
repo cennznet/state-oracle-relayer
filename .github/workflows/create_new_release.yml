@@ -33,3 +33,8 @@ jobs:
         run: gh pr create --draft --base main --title "Release version ${{ github.event.inputs.version }}" --body ""
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create pull request to `develop`
+        run: gh pr create --draft --base develop --title "Release version ${{ github.event.inputs.version }}" --body ""
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

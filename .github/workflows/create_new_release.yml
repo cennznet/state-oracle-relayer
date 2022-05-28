@@ -31,8 +31,10 @@ jobs:
           echo "::set-output name=commit::$(git rev-parse HEAD)"
 
       - name: Create pull request to `main`
-        uses: peter-evans/create-pull-request@v4
+        uses: devops-infra/action-pull-request@v0.4.2
         with:
-          branch: release/v${{ github.event.inputs.version }}
-          base: main
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          source_branch: release/v${{ github.event.inputs.version }}
+          target_branch: master
           title: Release version ${{ github.event.inputs.version }}
+          draft: true

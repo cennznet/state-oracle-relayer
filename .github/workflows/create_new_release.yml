@@ -31,3 +31,5 @@ jobs:
 
       - name: Create pull request to `main`
         run: gh pr create --title "Release version ${{ github.event.inputs.version }}" --draft --base main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

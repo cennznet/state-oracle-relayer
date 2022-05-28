@@ -30,5 +30,6 @@ jobs:
         uses: peter-evans/create-pull-request@v4
         with:
           branch: release/v${{ github.event.inputs.version }}
+          base: 'main'
           commit-message: Prep for v${{ github.event.inputs.version }}
           title: Release version ${{ github.event.inputs.version }}

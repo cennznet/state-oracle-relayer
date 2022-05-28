@@ -20,20 +20,16 @@ jobs:
           git config user.email noreply@github.com
 
       - name: Update version
-        uses: HarmvZ/set-package-json-version-action@v0.1.1
+        uses: MYXOMOPX/modify-pkg-json@master
         with:
-          version: ${{ github.event.inputs.version }}
+          target: ./package.json
+          action: "set_version"
+          argument: ${{ github.event.inputs.version }}
 
-      - name: Create pull request
+      - name: Create pull request to `main`
         uses: peter-evans/create-pull-request@v4
         with:
           branch: release/v${{ github.event.inputs.version }}
-          base: develop
-          title: Release version ${{ github.event.inputs.version }}
-
-      - name: Create pull request
-        uses: peter-evans/create-pull-request@v4
-        with:
-          branch: release/v${{ github.event.inputs.version }}
+          commit-message: Prep for v${{ github.event.inputs.version }}
           base: main
           title: Release version ${{ github.event.inputs.version }}

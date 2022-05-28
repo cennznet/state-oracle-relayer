@@ -27,7 +27,7 @@ jobs:
           npm version ${{ github.event.inputs.version }} --no-git-tag-version
           git add package.json
           git commit --message "Prepare release ${{ github.event.inputs.version }}"
-          git push origin
+          git push --set-upstream origin release/v${{ github.event.inputs.version }}
           echo "::set-output name=commit::$(git rev-parse HEAD)"
 
       - name: Create pull request to `main`

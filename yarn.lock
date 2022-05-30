@@ -834,6 +834,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@nomiclabs/hardhat-ethers@npm:^2.0.6":
+  version: 2.0.6
+  resolution: "@nomiclabs/hardhat-ethers@npm:2.0.6"
+  peerDependencies:
+    ethers: ^5.0.0
+    hardhat: ^2.0.0
+  checksum: 82319a2615804abae2ca70834a20bfc2874c742094fadeaea55e5c788e589794836a3a2eaaf19d8aecdadf1fd0bd7a4f9eac2c32bbda9ed081c8e2e3d4fe55cc
+  languageName: node
+  linkType: hard
+
 "@npmcli/fs@npm:^2.1.0":
   version: 2.1.0
   resolution: "@npmcli/fs@npm:2.1.0"
@@ -2179,7 +2189,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chalk@npm:^4.1.0":
+"chalk@npm:^4, chalk@npm:^4.1.0":
   version: 4.1.2
   resolution: "chalk@npm:4.1.2"
   dependencies:
@@ -5519,7 +5529,9 @@ __metadata:
     "@cennznet/api": ^2.1.1-alpha.2
     "@cennznet/types": ^2.1.1-alpha.2
     "@cloudamqp/amqp-client": ^2.0.3
+    "@nomiclabs/hardhat-ethers": ^2.0.6
     "@types/node": ^17.0.35
+    chalk: ^4
     dotenv: ^8.2.0
     ethers: ^5.6.5
     hardhat: ^2.9.6

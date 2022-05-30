@@ -1,4 +1,5 @@
 import { createLogger, format, transports, Logger } from "winston";
+import chalk from "chalk";
 
 type LoggerService = "RequestListener" | "RequestProccessor" | string;
 const instances = {} as Record<LoggerService, Logger>;
@@ -10,7 +11,7 @@ export const getLogger = (service: LoggerService): Logger => {
 		level: "info",
 		format: format.combine(
 			format.label({
-				label: service,
+				label: chalk.cyan(service),
 				message: true,
 			}),
 			format.timestamp({
@@ -31,7 +32,7 @@ export const getLogger = (service: LoggerService): Logger => {
 				format: format.combine(
 					format.colorize(),
 					format.printf(({ level, message, timestamp }) => {
-						return `${timestamp} ${level}: ${message}`;
+						return `${chalk.blue(timestamp)} ${level}: ${message}`;
 					})
 				),
 			}),

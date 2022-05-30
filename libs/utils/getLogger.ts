@@ -9,28 +9,29 @@ export const getLogger = (service: LoggerService): Logger => {
 
 	return (instances[service] = createLogger({
 		level: "info",
-		format: format.combine(
-			format.label({
-				label: chalk.cyan(service),
-				message: true,
-			}),
-			format.timestamp({
-				format: "YYYY-MM-DD HH:mm:ss",
-			}),
-			format.errors({ stack: true }),
-			format.splat(),
-			format.json()
-		),
 		transports: [
 			new transports.File({
 				filename: `logs/app.log`,
 				maxsize: 2048000, // 2 MB
 				maxFiles: 10,
+				format: format.combine(
+					format.uncolorize(),
+					format.label({
+						label: service,
+						message: true,
+					}),
+					getDefaultFormat()
+				),
 			}),
 
 			new transports.Console({
 				format: format.combine(
 					format.colorize(),
+					format.label({
+						label: chalk.cyan(service),
+						message: true,
+					}),
+					getDefaultFormat(),
 					format.printf(({ level, message, timestamp }) => {
 						return `${chalk.blue(timestamp)} ${level}: ${message}`;
 					})
@@ -39,3 +40,14 @@ export const getLogger = (service: LoggerService): Logger => {
 		],
 	}));
 };
+
+function getDefaultFormat() {
+	return format.combine(
+		format.timestamp({
+			format: "YYYY-MM-DD HH:mm:ss",
+		}),
+		format.errors({ stack: true }),
+		format.splat(),
+		format.json()
+	);
+}

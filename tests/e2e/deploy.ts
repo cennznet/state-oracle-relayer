@@ -26,7 +26,6 @@ Promise.all([getCENNZnetApi()])
 			`
 Contract: ${chalk.magenta("%s")}
 Account: ${chalk.magenta("%s")}
-
 Prep done ✅`,
 			contractAddress,
 			TEST_ACCOUNT_ADDRESS

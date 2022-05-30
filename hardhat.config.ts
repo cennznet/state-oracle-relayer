@@ -1,6 +1,6 @@
 import "@nomiclabs/hardhat-ethers";
 import "tsconfig-paths/register";
-import { TEST_ACCOUNT_SEED } from "@/tests/constants";
+import { TEST_ACCOUNT_KEY } from "@/tests/constants";
 
 export default {
 	solidity: {
@@ -15,7 +15,7 @@ export default {
 	networks: {
 		local: {
 			url: "http://localhost:9933",
-			accounts: [TEST_ACCOUNT_SEED],
+			accounts: [TEST_ACCOUNT_KEY],
 		},
 	},
 	paths: {

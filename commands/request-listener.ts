@@ -33,4 +33,5 @@ Promise.all([getCENNZnetApi()])
 	.catch((error) => {
 		if (error instanceof AMQPError) error?.connection?.close();
 		logger.error("%s", error);
+		process.exit(1);
 	});

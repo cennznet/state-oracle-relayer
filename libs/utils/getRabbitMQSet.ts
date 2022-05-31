@@ -9,7 +9,7 @@ export const getRabbitMQSet = async (
 	const connection = await client.connect();
 
 	const channel = await connection.channel();
-	const queue = await channel.queue(name, { durable: true });
+	const queue = await channel.queue(`OracleRelayer_${name}`, { durable: true });
 
 	return [channel, queue];
 };

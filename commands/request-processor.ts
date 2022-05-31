@@ -9,10 +9,13 @@ import { AMQPError, AMQPMessage } from "@cloudamqp/amqp-client";
 import { getCENNZnetApi } from "@/libs/utils/getCENNZnetApi";
 import { getEthersProvider } from "@/libs/utils/getEthersProvider";
 import { handleRequestMessage } from "@/libs/utils/handleRequestMessage";
+import chalk from "chalk";
 
 const logger = getLogger("RequestProccessor");
 logger.info(
-	`Start RequestProccessor with CENNZnet: %s | Ethereum: %s...`,
+	`Start RequestProccessor with CENNZnet: ${chalk.magenta(
+		"%s"
+	)} | Ethereum: ${chalk.magenta("%s")}...`,
 	CENNZNET_NETWORK,
 	ETHEREUM_NETWORK
 );

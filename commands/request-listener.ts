@@ -4,10 +4,13 @@ import { getCENNZnetApi } from "@/libs/utils/getCENNZnetApi";
 import { getLogger } from "@/libs/utils/getLogger";
 import { getRabbitMQSet } from "@/libs/utils/getRabbitMQSet";
 import { AMQPError } from "@cloudamqp/amqp-client";
+import chalk from "chalk";
 
 const logger = getLogger("RequestListener");
 logger.info(
-	`Start RequestListener with CENNZnet: %s | Ethereum: %s...`,
+	`Start RequestListener with CENNZnet: ${chalk.magenta(
+		"%s"
+	)} | Ethereum: ${chalk.magenta("%s")}...`,
 	CENNZNET_NETWORK,
 	ETHEREUM_NETWORK
 );

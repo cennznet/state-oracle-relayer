@@ -10,13 +10,13 @@ export const callCENNZ = async (
 	blockNumber: BigNumberish,
 	blockTimestamp: number
 ): Promise<SubmittableResult> => {
-	const signer = new Keyring({ type: "sr25519" }).addFromSeed(
-		CENNZNET_SIGNER as any
-	);
-
 	const returnDataLength = utils.hexDataLength(returnData);
 
 	if (returnDataLength < 32) throw { code: "INVALID_RETURN_DATA" };
+
+	const signer = new Keyring({ type: "sr25519" }).addFromSeed(
+		CENNZNET_SIGNER as any
+	);
 
 	const returnDataClaim = api.registry.createType(
 		"ReturnDataClaim",

@@ -46,7 +46,7 @@
     "start": "run-p start:request-listener start:request-processor start:request-processor",
     "test:e2e-prep": "NODE_OPTIONS=--openssl-legacy-provider hardhat run --network local tests/e2e/deploy.ts",
     "test:e2e-request": "jest --detectOpenHandles --forceExit tests/e2e/requestFlow.test.ts",
-    "test": "yarn jest --testPathIgnorePatterns e2e"
+    "test": "yarn jest --testPathIgnorePatterns=e2e"
   },
   "packageManager": "yarn@3.2.1",
   "engines": {

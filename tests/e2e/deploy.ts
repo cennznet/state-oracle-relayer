@@ -34,7 +34,7 @@ Prep done ✅`,
 		process.exit(0);
 	})
 	.catch((error) => {
-		logger.error(error);
+		logger.error("%s", error?.message);
 		process.exit(1);
 	});
 

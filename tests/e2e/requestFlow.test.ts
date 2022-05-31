@@ -37,41 +37,55 @@ describe("requestFlow", () => {
 		const wallet = new Wallet(signerKey, provider);
 		const contract = new Contract(contractAddress, abi, wallet);
 
-		const tx = await contract.helloEthereum(tokenAddress);
-		const { requestId, requestTimestamp, requestReturnData } =
-			await waitForResponse(contract);
+		const {
+			sendRequestId,
+			receiveRequestId,
+			requestTimestamp,
+			requestReturnData,
+		} = await interactWithContract(contract, tokenAddress);
 
-		await tx.wait(5);
-
-		expect(requestId!.gt(0)).toBe(true);
+		expect(sendRequestId!?.toString()).toEqual(receiveRequestId?.toString());
 		expect(requestTimestamp!.gt(0)).toBe(true);
 		expect(requestReturnData!.gt(0)).toBe(true);
 	}, 60000);
 });
 
-function waitForResponse(contract: Contract): Promise<{
-	requestId: BigNumber;
+async function interactWithContract(
+	contract: Contract,
+	tokenAddress: string
+): Promise<{
+	sendRequestId: BigNumber;
+	receiveRequestId: BigNumber;
 	requestTimestamp: BigNumber;
 	requestReturnData: BigNumber;
 }> {
+	let sendRequestId: BigNumber;
+	contract.on("HiToEthereum", (id: BigNumber) => {
+		sendRequestId = id;
+	});
+
+	const tx = await contract.helloEthereum(tokenAddress);
+
 	return new Promise((resolve) => {
-		let requestId: BigNumber,
+		let receiveRequestId: BigNumber,
 			requestTimestamp: BigNumber,
 			requestReturnData: BigNumber;
-
-		contract.on("HiToEthereum", (id: BigNumber) => {
-			requestId = id;
-		});
 
 		contract.on(
 			"HiFromEthereum",
 			(id: BigNumber, timestamp: BigNumber, returnData: BigNumber) => {
-				if (id.toString() !== requestId.toString())
-					throw { message: "`requestId` is mismatched" };
+				receiveRequestId = id;
 				requestTimestamp = timestamp;
 				requestReturnData = returnData;
 
-				resolve({ requestId, requestTimestamp, requestReturnData });
+				tx.wait(5).then(() => {
+					resolve({
+						sendRequestId,
+						receiveRequestId,
+						requestTimestamp,
+						requestReturnData,
+					});
+				});
 			}
 		);
 	});

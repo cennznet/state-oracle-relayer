@@ -1,5 +1,5 @@
 import { AMQPChannel, AMQPClient, AMQPQueue } from "@cloudamqp/amqp-client";
-import { RABBBITMQ_SERVER } from "@/libs/constants";
+import { CENNZNET_NETWORK, RABBBITMQ_SERVER } from "@/libs/constants";
 
 type QueueName = "RequestQueue";
 export const getRabbitMQSet = async (
@@ -9,7 +9,16 @@ export const getRabbitMQSet = async (
 	const connection = await client.connect();
 
 	const channel = await connection.channel();
-	const queue = await channel.queue(`OracleRelayer_${name}`, { durable: true });
+	const queue = await channel.queue(
+		`${getNetworkName()}_OracleRelayer_${name}`,
+		{ durable: true }
+	);
 
 	return [channel, queue];
 };
+
+function getNetworkName(): string {
+	return `${CENNZNET_NETWORK.charAt(0).toUpperCase()}${CENNZNET_NETWORK.slice(
+		1
+	)}`;
+}

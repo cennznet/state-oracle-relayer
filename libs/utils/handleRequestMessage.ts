@@ -45,7 +45,7 @@ export const handleRequestMessage = async (
 
 		// 1. Fetch request details from CENNZnet
 		if (abortSignal.aborted) return;
-		logger.info("Request #%d: fetching details...", requestId);
+		logger.info("Request #%d: [1/3] fetching details...", requestId);
 		const requestDetails = await fetchRequestDetails(cennzApi, requestId);
 		if (!requestDetails) {
 			await updateRequestRecord({
@@ -64,7 +64,7 @@ export const handleRequestMessage = async (
 
 		// 2. Call Ethereum with the request details above
 		if (abortSignal.aborted) return;
-		logger.info("Request #%d: calling Ethereum...", requestId);
+		logger.info("Request #%d: [2/3] calling Ethereum...", requestId);
 		const { returnData, blockNumber, blockTimestamp } = await callEthereum(
 			ethersProvider,
 			requestDetails.destination,
@@ -79,7 +79,7 @@ export const handleRequestMessage = async (
 		if (abortSignal.aborted) return;
 
 		// 3. Submit the `returnData` back to requester
-		logger.info("Request #%d: calling CENNZnet...", requestId);
+		logger.info("Request #%d: [3/3] calling CENNZnet...", requestId);
 		const result = await callCENNZ(
 			cennzApi,
 			requestId,
@@ -97,7 +97,7 @@ export const handleRequestMessage = async (
 		if (abortSignal.aborted) return;
 		messageDelivered = true;
 		await message.ack();
-		logger.info("Request #%d: done.", requestId);
+		logger.info("Request #%d: done 🎉", requestId);
 	} catch (error: any) {
 		switch (error?.code) {
 			case "CENNZ_DISPATCH_ERROR":

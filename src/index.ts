@@ -27,7 +27,7 @@ interface EthCallResponse {
  * @param target - target address to call
  * @param input - bytes for evm input
  */
-async function ethCall(target: string, input: BytesLike): Promise<EthCallResponse> {
+async function ethCall(api: Api, target: string, input: BytesLike): Promise<EthCallResponse> {
     console.log(`making eth_call:${target},input:${input}`);
     const provider = ethers.getDefaultProvider(ethereumNetwork, {
     	etherscan: "W7SECH28YMK2B1FCJP2SPXBZW5WDF4VEBV",
@@ -38,6 +38,16 @@ async function ethCall(target: string, input: BytesLike): Promise<EthCallRespons
     });
     const blockNumber = await provider.getBlockNumber();
     const { timestamp: blockTimestamp } = await provider.getBlock(blockNumber);
+
+    const cennzTimestamp = Number((await api.query.timestamp.now()).toJSON()) / 1000;
+
+
+    console.log("Block No:", blockNumber);
+    console.log("Block Timestamp:", blockTimestamp);
+    console.log("CENNZnet Timestamp", Number((await api.query.timestamp.now()).toJSON()) / 1000);
+    console.log("Difference to now for block:", (Date.now() / 1000) - blockTimestamp);
+    console.log("Difference to now for cennz:", (Date.now() / 1000) - cennzTimestamp);
+
 
     const returnData = await provider.call({
         to: target.toString(),
@@ -76,12 +86,11 @@ async function main() {
         const requestId = nextRequestId - 1;
         const rawRequestDetails: any = await api.query.ethStateOracle.requests(requestId);
         if(rawRequestDetails.isNone) return;
-
         const requestDetails:any = rawRequestDetails.toJSON();
 
         console.log(`new request: ${requestId}\ninfo:${JSON.stringify(requestDetails)}`);
 
-        let {returnData, blockNumber, blockTimestamp} = await ethCall(requestDetails.destination, requestDetails.inputData);
+        let {returnData, blockNumber, blockTimestamp} = await ethCall(api,requestDetails.destination, requestDetails.inputData);
 
         const returnDataLength = utils.hexDataLength(returnData);
 
@@ -100,13 +109,19 @@ async function main() {
         console.log(`submitting response: ${requestId}`);
         await api.tx.ethStateOracle
             .submitCallResponse(requestId, returnDataClaim, blockNumber, blockTimestamp)
-            .signAndSend(cennznetSigner, (result: ISubmittableResult) => {
+            .signAndSend(cennznetSigner, async (result: ISubmittableResult) => {
             	const { status, dispatchError } = result;
 
             	if (!status.isInBlock) return;
 
-            	if (dispatchError)
-					return console.warn({ error: JSON.stringify(dispatchError) });
+            	if (dispatchError) {
+            		const cennzTimestamp = Number((await api.query.timestamp.now()).toJSON()) / 1000;
+            		console.log("Etheruem:", blockTimestamp);
+            		console.log("CENNZnet:", cennzTimestamp);
+            		console.log("Difference:", (cennzTimestamp) - blockTimestamp);
+            		return console.warn({ error: JSON.stringify(dispatchError) });
+            	}
+
 
                 console.log(`request: ${requestId} submitted`);
             });

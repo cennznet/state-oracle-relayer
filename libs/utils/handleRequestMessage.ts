@@ -76,9 +76,8 @@ export const handleRequestMessage = async (
 			ethBlockNumber: blockNumber.toString(),
 		});
 
-		if (abortSignal.aborted) return;
-
 		// 3. Submit the `returnData` back to requester
+		if (abortSignal.aborted) return;
 		logger.info("Request #%d: [3/3] calling CENNZnet...", requestId);
 		const result = await callCENNZ(
 			cennzApi,

@@ -1,5 +1,6 @@
 import { getCENNZnetApi } from "@/libs/utils/getCENNZnetApi";
 import { getLogger } from "@/libs/utils/getLogger";
+import { waitForBlock } from "@/libs/utils/waitForBlock";
 import { TEST_ACCOUNT_ADDRESS } from "@/tests/constants";
 import { Api } from "@cennznet/api";
 import { cvmToAddress } from "@cennznet/types/utils";
@@ -9,24 +10,37 @@ import chalk from "chalk";
 
 const { resolve } = require("path");
 
-const logger = getLogger("E2E");
+const logger = getLogger("E2E-PREP");
 
 Promise.all([getCENNZnetApi()])
 	.then(async ([cennzApi]) => {
 		//1. Fund CPAY to test account
+		logger.info(
+			"[1/3] Transferring CPAY to test account %s...",
+			TEST_ACCOUNT_ADDRESS
+		);
 		await fundGasToAccount(cennzApi, TEST_ACCOUNT_ADDRESS);
+		await waitForBlock(cennzApi, 1);
 
 		//2. Deploy new StateOracle contract to the CENNZNet
+		logger.info("[2/3] Deploying test contract...", TEST_ACCOUNT_ADDRESS);
 		const contractAddress = await deployContract();
+		await waitForBlock(cennzApi, 1);
 
-		//3. Fund CPAY to Contract Address
+		// 3. Fund CPAY to Contract Address
+		logger.info(
+			"[3/3] Transferring CPAY to contract account %s...",
+			contractAddress
+		);
 		await fundGasToAccount(cennzApi, contractAddress);
+		await waitForBlock(cennzApi, 1);
 
 		logger.info(
 			`
+
+${chalk.green("Prep done")} 🎉
 Contract: ${chalk.magenta("%s")}
-Account: ${chalk.magenta("%s")}
-Prep done ✅`,
+Account: ${chalk.magenta("%s")}`,
 			contractAddress,
 			TEST_ACCOUNT_ADDRESS
 		);

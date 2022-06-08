@@ -7,6 +7,8 @@ import { requeueMessage } from "@/libs/utils/requeueMessage";
 import { Api } from "@cennznet/api";
 import { AMQPMessage, AMQPQueue } from "@cloudamqp/amqp-client";
 import { ethers } from "ethers";
+import Keyring from "@polkadot/keyring";
+import { CENNZNET_SIGNER } from "@/libs/constants";
 
 const logger = getLogger("RequestProccessor");
 
@@ -80,12 +82,16 @@ export const handleRequestMessage = async (
 		// 3. Submit the `returnData` back to requester
 		if (abortSignal.aborted) return;
 		logger.info("Request #%d: [3/3] calling CENNZnet...", requestId);
+		const signer = new Keyring({ type: "sr25519" }).addFromSeed(
+			CENNZNET_SIGNER as any
+		);
 		const result = await submitResponseToCENNZ(
 			cennzApi,
 			requestId,
 			returnData,
 			blockNumber,
-			blockTimestamp
+			blockTimestamp,
+			signer
 		);
 
 		await updateRequestRecord({

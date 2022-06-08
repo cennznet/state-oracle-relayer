@@ -1,6 +1,5 @@
-import { CENNZNET_SIGNER } from "@/libs/constants";
 import { Api, SubmittableResult } from "@cennznet/api";
-import Keyring from "@polkadot/keyring";
+import { KeyringPair } from "@polkadot/keyring/types";
 import { BigNumberish, BytesLike, utils } from "ethers";
 
 export const submitResponseToCENNZ = async (
@@ -8,15 +7,12 @@ export const submitResponseToCENNZ = async (
 	requestId: number,
 	returnData: BytesLike,
 	blockNumber: BigNumberish,
-	blockTimestamp: number
+	blockTimestamp: number,
+	signer: KeyringPair
 ): Promise<SubmittableResult> => {
 	const returnDataLength = utils.hexDataLength(returnData);
 
 	if (returnDataLength < 32) throw { code: "INVALID_RETURN_DATA" };
-
-	const signer = new Keyring({ type: "sr25519" }).addFromSeed(
-		CENNZNET_SIGNER as any
-	);
 
 	const returnDataClaim = api.registry.createType(
 		"ReturnDataClaim",

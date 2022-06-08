@@ -15,9 +15,11 @@ describe("submitResponseToCENNZ", () => {
 		const {
 			submitResponseToCENNZ,
 		} = require("@/libs/utils/submitResponseToCENNZ");
+		const Keyring = require("@polkadot/keyring");
 
 		try {
-			await submitResponseToCENNZ({} as unknown as Api, 1, "0x0", 1, 1);
+			const signer = new Keyring().addFromSeed();
+			await submitResponseToCENNZ({} as unknown as Api, 1, "0x0", 1, 1, signer);
 		} catch (error: any) {
 			expect(error.code).toBe("INVALID_RETURN_DATA");
 		}
@@ -42,17 +44,20 @@ describe("submitResponseToCENNZ", () => {
 		const {
 			submitResponseToCENNZ,
 		} = require("@/libs/utils/submitResponseToCENNZ");
+		const Keyring = require("@polkadot/keyring");
 		const returnDataOk = getHexString(32);
 		const returnDataExcced = getHexString(33);
 		const requestId = 1;
 		const blockNumber = 1;
 		const blockTimestamp = 1;
+		const signer = new Keyring().addFromSeed();
 		await submitResponseToCENNZ(
 			mockedApi as unknown as Api,
 			requestId,
 			returnDataOk,
 			blockNumber,
-			blockTimestamp
+			blockTimestamp,
+			signer
 		);
 		await submitResponseToCENNZ(
 			mockedApi as unknown as Api,
@@ -113,8 +118,10 @@ describe("submitResponseToCENNZ", () => {
 		const {
 			submitResponseToCENNZ,
 		} = require("@/libs/utils/submitResponseToCENNZ");
+		const Keyring = require("@polkadot/keyring");
 		try {
-			await submitResponseToCENNZ(mockedApi, 1, getHexString(32), 1, 1);
+			const signer = new Keyring().addFromSeed();
+			await submitResponseToCENNZ(mockedApi, 1, getHexString(32), 1, 1, signer);
 		} catch (error: any) {
 			expect(error.code).toBe("CENNZ_DISPATCH_ERROR");
 			expect(error.error).toEqual(JSON.stringify(dispatchError.toJSON()));

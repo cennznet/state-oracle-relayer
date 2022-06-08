@@ -1,6 +1,6 @@
 import type { Api } from "@cennznet/api";
 
-describe("callCENNZ", () => {
+describe("submitResponseToCENNZ", () => {
 	beforeAll(() => {
 		jest.mock("@polkadot/keyring", () => {
 			return class Keyring {
@@ -12,10 +12,12 @@ describe("callCENNZ", () => {
 	});
 
 	it("throws error if `returnData` is less than 32 bytes", async () => {
-		const { callCENNZ } = require("@/libs/utils/callCENNZ");
+		const {
+			submitResponseToCENNZ,
+		} = require("@/libs/utils/submitResponseToCENNZ");
 
 		try {
-			await callCENNZ({} as unknown as Api, 1, "0x0", 1, 1);
+			await submitResponseToCENNZ({} as unknown as Api, 1, "0x0", 1, 1);
 		} catch (error: any) {
 			expect(error.code).toBe("INVALID_RETURN_DATA");
 		}
@@ -37,20 +39,22 @@ describe("callCENNZ", () => {
 			},
 		};
 
-		const { callCENNZ } = require("@/libs/utils/callCENNZ");
+		const {
+			submitResponseToCENNZ,
+		} = require("@/libs/utils/submitResponseToCENNZ");
 		const returnDataOk = getHexString(32);
 		const returnDataExcced = getHexString(33);
 		const requestId = 1;
 		const blockNumber = 1;
 		const blockTimestamp = 1;
-		await callCENNZ(
+		await submitResponseToCENNZ(
 			mockedApi as unknown as Api,
 			requestId,
 			returnDataOk,
 			blockNumber,
 			blockTimestamp
 		);
-		await callCENNZ(
+		await submitResponseToCENNZ(
 			mockedApi as unknown as Api,
 			requestId,
 			returnDataExcced,
@@ -106,9 +110,11 @@ describe("callCENNZ", () => {
 			},
 		};
 
-		const { callCENNZ } = require("@/libs/utils/callCENNZ");
+		const {
+			submitResponseToCENNZ,
+		} = require("@/libs/utils/submitResponseToCENNZ");
 		try {
-			await callCENNZ(mockedApi, 1, getHexString(32), 1, 1);
+			await submitResponseToCENNZ(mockedApi, 1, getHexString(32), 1, 1);
 		} catch (error: any) {
 			expect(error.code).toBe("CENNZ_DISPATCH_ERROR");
 			expect(error.error).toEqual(JSON.stringify(dispatchError.toJSON()));

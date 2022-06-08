@@ -3,7 +3,7 @@ import { Api, SubmittableResult } from "@cennznet/api";
 import Keyring from "@polkadot/keyring";
 import { BigNumberish, BytesLike, utils } from "ethers";
 
-export const callCENNZ = async (
+export const submitResponseToCENNZ = async (
 	api: Api,
 	requestId: number,
 	returnData: BytesLike,

@@ -1,5 +1,5 @@
 import { Request, RequestInterface } from "@/libs/models";
-import { callCENNZ } from "@/libs/utils/callCENNZ";
+import { submitResponseToCENNZ } from "@/libs/utils/submitResponseToCENNZ";
 import { callEthereum } from "@/libs/utils/callEthereum";
 import { fetchRequestDetails } from "@/libs/utils/fetchRequestDetails";
 import { getLogger } from "@/libs/utils/getLogger";
@@ -79,7 +79,7 @@ export const handleRequestMessage = async (
 		// 3. Submit the `returnData` back to requester
 		if (abortSignal.aborted) return;
 		logger.info("Request #%d: [3/3] calling CENNZnet...", requestId);
-		const result = await callCENNZ(
+		const result = await submitResponseToCENNZ(
 			cennzApi,
 			requestId,
 			returnData,

@@ -26,5 +26,5 @@ jobs:
           key: node-modules-${{ hashFiles('yarn.lock') }}
       - run: yarn install
         if: steps.cache.outputs.cache-hit != 'true'
-      - run: yarn test
+      - run: yarn test:unit
       - run: yarn build

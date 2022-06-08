@@ -3,6 +3,7 @@ import { collectPendingRequestIds } from "@/libs/utils/collectPendingRequestIds"
 import { getCENNZnetApi } from "@/libs/utils/getCENNZnetApi";
 import { getLogger } from "@/libs/utils/getLogger";
 import { getRabbitMQSet } from "@/libs/utils/getRabbitMQSet";
+import { u256 } from "@cennznet/types";
 import { AMQPError } from "@cloudamqp/amqp-client";
 import chalk from "chalk";
 
@@ -19,7 +20,7 @@ Promise.all([getCENNZnetApi()])
 		const [, queue] = await getRabbitMQSet("RequestQueue");
 
 		await cennzApi.query.ethStateOracle.nextRequestId(
-			async (nextRequestId: any) => {
+			async (nextRequestId: u256) => {
 				const requestIds = await collectPendingRequestIds(
 					nextRequestId.toNumber()
 				);

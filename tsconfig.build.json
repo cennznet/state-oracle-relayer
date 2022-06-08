@@ -3,5 +3,6 @@
   "compilerOptions": {
     "noEmit": false,
     "outDir": "dist"
-  }
+  },
+  "exclude": ["node_modules", "tests", "hardhat.config.ts", "jest.config.ts"]
 }

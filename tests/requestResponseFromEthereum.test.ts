@@ -1,7 +1,7 @@
-import { callEthereum } from "@/libs/utils/callEthereum";
+import { requestResponseFromEthereum } from "@/libs/utils/requestResponseFromEthereum";
 import { BaseProvider } from "@ethersproject/providers";
 
-describe("callEthereum", () => {
+describe("requestResponseFromEthereum", () => {
 	it("uses BaseProvider as expected", async () => {
 		const mockedProvider = {
 			getBlockNumber: jest.fn(() => Promise.resolve(1)),
@@ -12,11 +12,12 @@ describe("callEthereum", () => {
 		const target = "0x1";
 		const input = "0x0";
 
-		const { returnData, blockNumber, blockTimestamp } = await callEthereum(
-			mockedProvider as unknown as BaseProvider,
-			target,
-			input
-		);
+		const { returnData, blockNumber, blockTimestamp } =
+			await requestResponseFromEthereum(
+				mockedProvider as unknown as BaseProvider,
+				target,
+				input
+			);
 
 		expect(returnData).toBe("0x2");
 		expect(blockNumber).toBe(1);

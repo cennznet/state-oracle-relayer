@@ -9,7 +9,7 @@ interface EthCallResponse {
 	blockTimestamp: number;
 }
 
-export const callEthereum = async (
+export const requestResponseFromEthereum = async (
 	provider: ethers.providers.BaseProvider,
 	target: string,
 	input: BytesLike

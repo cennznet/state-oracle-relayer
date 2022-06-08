@@ -1,6 +1,6 @@
 import { Request, RequestInterface } from "@/libs/models";
 import { submitResponseToCENNZ } from "@/libs/utils/submitResponseToCENNZ";
-import { callEthereum } from "@/libs/utils/callEthereum";
+import { requestResponseFromEthereum } from "@/libs/utils/requestResponseFromEthereum";
 import { fetchRequestDetails } from "@/libs/utils/fetchRequestDetails";
 import { getLogger } from "@/libs/utils/getLogger";
 import { requeueMessage } from "@/libs/utils/requeueMessage";
@@ -65,11 +65,12 @@ export const handleRequestMessage = async (
 		// 2. Call Ethereum with the request details above
 		if (abortSignal.aborted) return;
 		logger.info("Request #%d: [2/3] calling Ethereum...", requestId);
-		const { returnData, blockNumber, blockTimestamp } = await callEthereum(
-			ethersProvider,
-			requestDetails.destination,
-			requestDetails.inputData
-		);
+		const { returnData, blockNumber, blockTimestamp } =
+			await requestResponseFromEthereum(
+				ethersProvider,
+				requestDetails.destination,
+				requestDetails.inputData
+			);
 
 		await updateRequestRecord({
 			state: "EthCalled",

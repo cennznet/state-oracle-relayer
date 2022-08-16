@@ -32,10 +32,9 @@
     "yargs": "^17.5.1"
   },
   "scripts": {
+    "dev": "run-p dev:request-listener dev:request-processor dev:docker",
     "dev:docker": "docker-compose up",
-    "dev:cennznet": "docker run -p 9944:9944 -p 9933:9933 cennznet/cennznet:latest --dev --unsafe-ws-external --unsafe-rpc-external",
     "dev:execute": "NODE_OPTIONS=--openssl-legacy-provider ts-node -r tsconfig-paths/register",
-    "dev": "run-p dev:request-listener dev:request-processor dev:request-processor",
     "dev:request-listener": "yarn dev:execute --files commands/request-listener.ts",
     "dev:request-processor": "yarn dev:execute --files commands/request-processor.ts",
     "format": "prettier --config .prettierrc.json ./ --write",

@@ -1,8 +1,20 @@
 version: "3.2"
 services:
+  cennznet:
+    image: cennznet/cennznet:2.2.0-rc6
+    volumes:
+      - ./.cennznet/data:/mnt/data
+    command:
+      - --dev
+      - --unsafe-ws-external
+      - --unsafe-rpc-external
+      - --base-path=/mnt/data
+    ports:
+      - "9933:9933"
+      - "9944:9944"
+
   rabbitmq:
     image: rabbitmq:3-management-alpine
-    container_name: "rabbitmq"
     ports:
       - 5672:5672
       - 15672:15672

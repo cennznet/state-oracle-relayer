@@ -78,7 +78,7 @@ async function interactWithContract(
 				requestTimestamp = timestamp;
 				requestReturnData = returnData;
 
-				tx.wait(5).then(() => {
+				tx.wait(10).then(() => {
 					resolve({
 						sendRequestId,
 						receiveRequestId,

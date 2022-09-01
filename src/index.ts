@@ -65,14 +65,20 @@ async function ethCall(api: Api, target: string, input: BytesLike): Promise<EthC
 * Run the relayer daemon
 */
 async function main() {
-    let api = await Api.create({ network: cennznetNetwork, types: {
-		ReturnDataClaim: {
-			_enum: {
-				Ok: "[u8; 32]",
-				ExceedsLengthLimit: null,
-			},
-		},
-	} });
+		let apiOptions:any = {
+			types: {
+				ReturnDataClaim: {
+					_enum: {
+						Ok: "[u8; 32]",
+						ExceedsLengthLimit: null,
+					},
+				},
+			}
+		}
+
+		apiOptions[cennznetNetwork.indexOf("ws") === 0? "provider" : "network"] = cennznetNetwork;
+
+    let api = await Api.create(apiOptions);
     let cennznetSigner = new Keyring({ 'type': 'sr25519' }).addFromSeed(cennznetSeed);
     console.log(
         `\nstate 🔮 relayer\n`+

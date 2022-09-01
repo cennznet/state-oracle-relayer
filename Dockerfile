@@ -1,9 +1,24 @@
-FROM node:16.5.0-alpine
-ENV PYCURL_SSL_LIBRARY=openssl
-RUN apk add --no-cache --virtual .build-deps build-base python3-dev py3-pip git \
-    # keep libcurl in the image
-    && apk add --no-cache curl-dev \
-    && pip3 install pycurl \
-    && rm -rf /var/cache/apk/*
-COPY . .
-RUN yarn && apk del .build-deps && rm -rf .git/ /root/.cache /usr/local/share/.cache
+# builder
+FROM node:16 as builder
+WORKDIR /app
+
+COPY package.json yarn.lock ./
+# COPY tsconfig.json ./
+RUN yarn install
+
+ADD ./src ${workdir}
+
+# production
+FROM node:16-alpine
+ENV TZ utc
+
+RUN apk add --no-cache tini
+ENTRYPOINT ["/sbin/tini", "--"]
+
+WORKDIR /app
+COPY --from=builder /app .
+
+ENV PATH="/app/node_modules/.bin:${PATH}"
+
+ENTRYPOINT ["ts-node"]
+CMD ["index.ts"]
